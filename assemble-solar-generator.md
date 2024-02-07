@@ -6,12 +6,17 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 > 
 > Atentar, principalmente, para replicar **validações** em ambos os ambientes.
 
+> Alterações no banco de dados, realizadas através de migrations, devem ser refletidas nas entidades, DTOs e outras estruturas similares no projeto.
+>
+> Atentar, principalmente, para consultas onde o campo está muitas vezes presente como uma string ou parte de uma string.
+
 ## Módulo Gestão
 
 ### Loja Online - Geral
 
 * Reordenar e renomear as abas de acordo com a seguinte ordem:
   * Estruturas
+    * Referente à _Tipos de Telhado_
   * Acessórios
   * Módulos
   * Marcas de Inversores
@@ -44,6 +49,9 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 * Realizar carregamento dinâmico de todos os campos de `select` que apresentem todos os produtos do ERP (sem filtro)
   * Buscar dados somente quando o usuário digitar pelo menos três caracteres
   * Apresentar loading (Carregando...) enquanto os resultados estiverem sendo carregados
+* Ajustar a transição de salvamento de todos os botões **Salvar** para **`Salvando... <Spinner />`**, com espaço adequado entre o texto e o elemento
+* Avaliar a possibilidade de substituir todos os modais por novas páginas, para manter o padrão com a edição e cadastro de estruturas
+  * Se isso se concretizar, as alterações relacionadas exclusivamente a modais podem ser desconsideradas
 
 ### Módulos
 
@@ -58,11 +66,51 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 * Tornar todos os campos do formulário obrigatórios
 * Substituir os campos de texto **Nome** e **Código ERP** por um campo `select` que lista os produtos **não obsoletos** do ERP que iniciam com o código `1001`
   * Armazenar as informações de descrição e código ERP de acordo com o retorno do ERP
-* 🚩 Renomear colunas do banco:
+* 🚩 Renomear colunas da tabela `modules`:
   * `name` ➡️ `erp_description`
   * `original_id` ➡️ `erp_code`
+  * `base_power` ➡️ `power`
 
 ### Tipos de Telhado
+
+#### Listagem
+
+* Remover coluna **ID**
+* Renomear coluna **Nome** para **Descrição**
+* Renomear coluna **Cabo 1** para **Cód. ERP Cabo Negativo**
+* Renomear coluna **Cabo 2** para **Cód. ERP Cabo Positivo**
+* Remover coluna **Qtd. Cabos**
+* Remover coluna **Módulos**
+
+#### Cadastro / Edição
+
+* Renomear os labels dos campos de formulário de acordo com as mesmas renomeações realizadas na tabela de listagem
+* Remover o campo de formulário **ID Original**
+* Remover o campo de formulário **Quantidade de cabos**
+* Remover o campo de formulário **Módulos**
+* Substituir os campos de texto **Cabo 1 - Código Erp** e **Cabo 2 - Código Erp** por campos `select` que listam os produtos **não obsoletos** do ERP que iniciam com o código `1020`
+  * Armazenar as informações de código ERP de acordo com o retorno do ERP
+* Para armazenamento das informações do formulário, criar a nova tabela `structures`
+  * Essa tabela deve possuir as seguintes colunas:
+    * `id`
+    * `description`
+    * `type`: Define se a estrutura é do tipo solo ou telhado, deve aceitar somente os valores `ROOF` ou `GROUND`
+    * `negative_cable_erp_code`
+    * `positive_cable_erp_code`
+    * `active`
+    * `created_at`
+    * `updated_at`
+    * `deleted_at`
+  * Também será necessário criar a tabela `structures_branches` para associação entre estruturas e filiais 
+* 🚩 Remover tabelas `roof_types`, `roof_types_branches`, `module_roof_types`
+* Substituir modal por nova página, em razão do aumento de informações associadas às estruturas
+  * Para cada estrutura, deverão ser criadas duas abas na página de adição/edição: **Configurações** e **Produtos**
+  * Todos os campos de formulário relacionados a ambas as abas devem ser obrigatórios
+    * O sistema não deve permitir que uma estrutura seja salva sem ao menos um produto cadastrado
+
+#### Deleção
+
+* Implementar deleção lógica
 
 ### Kits
 
@@ -73,14 +121,7 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 #### Listagem
 
 * Remover coluna **ID**
-* Renomear colunas:
-  * **Código ERP inversor** para **Cód. ERP Inversor**
-  * **Nome inversor** para **Descrição**
-  * **Marca inversor** para **Marca**
-  * **Potência inversor** para **Potência**
-  * **Código ERP conector** para **Cód. ERP Conector**
-  * **Quantidade de conectores** para **Qtd Conectores**
-* Remover coluna **Código Stick Wi-Fi**
+* Renomear coluna **Ativo** para **Ativa**
 
 #### Cadastro / Edição
 
@@ -97,13 +138,34 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 #### Listagem
 
 * Remover coluna **ID**
-* Renomear coluna **Ativo** para **Ativa**
+* Renomear colunas:
+  * **Código ERP inversor** para **Cód. ERP Inversor**
+  * **Nome inversor** para **Descrição**
+  * **Marca inversor** para **Marca**
+  * **Potência inversor** para **Potência**
+  * **Código ERP conector** para **Cód. ERP Conector**
+  * **Quantidade de conectores** para **Qtd Conector**
+* Remover coluna **Código Stick Wi-Fi**
+* Adicionar coluna **Qtd Cabo/Conector**
 
 #### Cadastro / Edição
 
 * Tornar todos os campos do formulário obrigatórios
+* Renomear os labels dos campos de formulário de acordo com as mesmas renomeações realizadas na tabela de listagem
 * Substituir os campos de texto **Código ERP do inversor** e **Nome do inversor** por um campo `select` que lista os produtos **não obsoletos** do ERP que iniciam com o código `1010`
   * Armazenar as informações de descrição e código ERP de acordo com o retorno do ERP
+* Substituir o campo de texto **Código ERP conector** por um campo `select` que lista os produtos **não obsoletos** do ERP que iniciam com o código `1030`
+  * Armazenar a informação de código ERP de acordo com o retorno do ERP
+* Remover o campo de formulário **Código Stick Wi-Fi (Não obrigatório)**
+* Criar o campo **Qtd Cabo/Conector** para inclusão da quantidade de cabo exigida para cada conector
+  * Adicionar a coluna `connector_cable_quantity` à tabela `inverters`
+* 🚩 Renomear colunas da tabela `inverters`:
+  * `inverter_erp_code` ➡️ `erp_code`
+  * `inverter_name` ➡️ `description`
+  * `inverter_brand_id` ➡️ `brand_id`
+  * `inverter_power` ➡️ `power`
+  * `connectors_quantity` ➡️ `connector_quantity`
+* 🚩 Remover coluna `stick_wifi_code` da tabela `inverters`
 
 #### Deleção
 
@@ -111,6 +173,8 @@ Detalhamento das alterações necessárias para implantação da nova versão do
   * Adicionar coluna `deleted_at` na tabela `inverters`
 
 ### Acessórios
+
+* Nenhuma alteração específica identificada
 
 ## Módulo Portal
 
