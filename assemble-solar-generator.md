@@ -35,24 +35,13 @@ Detalhamento das alterações necessárias para implantação da nova versão do
   * Mover botões para o rodapé do modal
   * Padronizar tamanho dos botões **Salvar** e **Cancelar**
 * Atualizar listagens ao realizar adição/edição/deleção
-* Utilizar [React Hook Form](https://react-hook-form.com/) para construção dos formulários
-* Utilizar [`useMutation`](https://tanstack.com/query/latest/docs/framework/react/reference/useMutation) para envio dos dados ao backend
-* Utilizar [`useInfiniteQuery`](https://tanstack.com/query/latest/docs/framework/react/reference/useInfiniteQuery) para listagem dos dados do backend
-* Utilizar tipagem de maneira adequada em todos os pontos do processo
-* Aplicar otimizações de estilo necessárias para melhoria da usabilidade
-* Renderizar componentes somente quando variável de apresentação estiver com valor lógico VERDADEIRO
-* Corrigir outros problemas identificados durante o desenvolvimento
-* Ajustar mensagens de sucesso e mensagens de erro
-* Bloquear preenchimento de campos e cliques em botões enquanto:
-  * Ocorrer um carregamento de dados
-  * Ocorrer um salvamento de dados
 * Realizar carregamento dinâmico de todos os campos de `select` que apresentem todos os produtos do ERP (sem filtro)
   * Buscar dados somente quando o usuário digitar pelo menos três caracteres
   * Apresentar loading (Carregando...) enquanto os resultados estiverem sendo carregados
   * Possivelmente, criar _hook_ para listagem de produtos do ERP, como essa listagem será reutilizada em vários locais, somente com paramentrizações diferentes
 * Ajustar a transição de salvamento de todos os botões **Salvar** para **`Salvando... <Spinner />`**, com espaço adequado entre o texto e o elemento
 * Avaliar a possibilidade de substituir todos os modais por novas páginas, para manter o padrão com a edição e cadastro de estruturas
-  * Se isso se concretizar, as alterações relacionadas exclusivamente a modais podem ser desconsideradas
+  * Se isso se concretizar, as alterações relacionadas exclusivamente a modais podem ser desconsideradas 
 
 ### Módulos
 
@@ -205,11 +194,48 @@ Considerando as alterações no módulo gestão, serão necessárias alteraçõe
 
 ### Monte Seu Gerador (MSG)
 
+Em relação à estrutura atual do menu MSG, vamos realizar algumas alterações de layout para melhoria da experiência do usuário, conforme ilustrado abaixo:
+
+![image](https://github.com/nexenketly/task-docs/assets/109694742/a681d98d-6061-4b5d-9512-4a1d9db71aad)
+
+* Alterar o título do passo/etapa para "Configurações"
+* Alterar o título do texto apresentado no cabeçalho do componente para "Configurações do Gerador"
+  * O texto do cabeçalho também será alterado para melhoria da comunicação com o usuário, porém ainda está em construção
+* Apresentar formulário de inserção dos parâmetros em duas colunas, sendo a primeira para informar o inversor e a segunda para informar módulo e potência
+* Ajustar os rótulos dos campos de formulário
+* Substituir a estilização atual dos campos de seleção, mantendo o padrão do componente `Select` do React
+  * Padrão atual:
+    
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/5529a0dc-6d57-4c93-ad2e-4dd5f66a6ed3)
+  * Padrão React:
+    
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/8fb4c4f0-1e64-491a-a4bb-4aabed30b0e2)
+    
+Além disso, também será adicionada opção para seleção da configuração de estrutura para o gerador, incluindo:
+
+* Sem estrutura
+* Estrutura em solo
+* Estrutura em telhado
+
+O comportamento de cada opção será detalhado nas seções abaixo.
+
+> O botão de "Buscar" do menu MSG deve passar a estar sempre habilitado e, quando clicado, deve validar os campos de formulário da página para garantir o seu preenchimento.
+>
+> A princípio todos os campos são obrigatórios.
+>
+> Lógicas específicas de cada configuração de estrutura devem ser validadas e possíveis erros devem estar explícitos para o usuário.
+
 #### Sem estrutura
+
+##### Lógica do cálculo
 
 #### Estrutura em solo
 
+##### Lógica do cálculo
+
 #### Estrutura em telhado
+
+##### Lógica do cálculo
 
 ### Cálculo de Estruturas
 
@@ -235,4 +261,17 @@ Com a implementação da nova versão do menu MSG, sugere-se a remoção do menu
         * Nesse cenário, a parametrização não seria salva em Armazenamento Local, devido as especificidades da tela e do menu de edição do orçamento
         * Além disso, alterações somente seriam salvas após o usuário clicar no botão "Salvar"
         * Por fim, todas as edições manuais seriam perdidas (como já ocorre hoje)
+       
+## Recomendações Gerais
 
+
+* Utilizar [React Hook Form](https://react-hook-form.com/) para construção dos formulários
+* Utilizar [`useMutation`](https://tanstack.com/query/latest/docs/framework/react/reference/useMutation) para envio dos dados ao backend
+* Utilizar [`useInfiniteQuery`](https://tanstack.com/query/latest/docs/framework/react/reference/useInfiniteQuery) para listagem dos dados do backend
+* Utilizar tipagem de maneira adequada em todos os pontos do processo
+* Aplicar otimizações de estilo necessárias para melhoria da usabilidade
+* Corrigir outros problemas identificados durante o desenvolvimento
+* Ajustar mensagens de sucesso e mensagens de erro
+* Bloquear preenchimento de campos e cliques em botões enquanto:
+  * Ocorrer um carregamento de dados
+  * Ocorrer um salvamento de dados
