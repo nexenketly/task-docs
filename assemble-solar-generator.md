@@ -49,6 +49,7 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 * Realizar carregamento dinâmico de todos os campos de `select` que apresentem todos os produtos do ERP (sem filtro)
   * Buscar dados somente quando o usuário digitar pelo menos três caracteres
   * Apresentar loading (Carregando...) enquanto os resultados estiverem sendo carregados
+  * Possivelmente, criar _hook_ para listagem de produtos do ERP, como essa listagem será reutilizada em vários locais, somente com paramentrizações diferentes
 * Ajustar a transição de salvamento de todos os botões **Salvar** para **`Salvando... <Spinner />`**, com espaço adequado entre o texto e o elemento
 * Avaliar a possibilidade de substituir todos os modais por novas páginas, para manter o padrão com a edição e cadastro de estruturas
   * Se isso se concretizar, as alterações relacionadas exclusivamente a modais podem ser desconsideradas
@@ -66,6 +67,8 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 * Tornar todos os campos do formulário obrigatórios
 * Substituir os campos de texto **Nome** e **Código ERP** por um campo `select` que lista os produtos **não obsoletos** do ERP que iniciam com o código `1001`
   * Armazenar as informações de descrição e código ERP de acordo com o retorno do ERP
+* Adicionar campo `select` múltiplo para inclusão das estruturas com as quais aquele módulo pode ser instalado
+  * Para armazenamento da informação, criar a tabela `module_structures` com os campos `module_id` e `structure_id`
 * 🚩 Renomear colunas da tabela `modules`:
   * `name` ➡️ `erp_description`
   * `original_id` ➡️ `erp_code`
@@ -107,6 +110,10 @@ Detalhamento das alterações necessárias para implantação da nova versão do
   * Para cada estrutura, deverão ser criadas duas abas na página de adição/edição: **Configurações** e **Produtos**
   * Todos os campos de formulário relacionados a ambas as abas devem ser obrigatórios
     * O sistema não deve permitir que uma estrutura seja salva sem ao menos um produto cadastrado
+  * A estrutura da nova página está ilustrada na imagem abaixo, podendo ser alterada para melhoria da usabilidade e apresentação do conteúdo ao usuário:
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/dba9cd6d-381a-4601-95b4-082913e725e6)
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/11eba02e-e2a5-47bd-b923-184d087275a1)
+    * Detalhes de implementação do formulário deverão ser discutidos durante o desenvolvimento
 
 #### Deleção
 
@@ -115,6 +122,7 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 ### Kits
 
 * Remover aba pois não será mais necessária
+  * 🚩 Remover tabela `kits`
 
 ### Marca Inversores
 
