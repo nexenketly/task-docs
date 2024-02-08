@@ -114,6 +114,7 @@ Detalhamento das alterações necessárias para implantação da nova versão do
     ![image](https://github.com/nexenketly/task-docs/assets/109694742/dba9cd6d-381a-4601-95b4-082913e725e6)
     ![image](https://github.com/nexenketly/task-docs/assets/109694742/11eba02e-e2a5-47bd-b923-184d087275a1)
     * Detalhes de implementação do formulário deverão ser discutidos durante o desenvolvimento
+    * O campo `select` da aba de produtos deve listar os produtos **não obsoletos** do ERP que iniciam com o código `1050`
 
 #### Deleção
 
