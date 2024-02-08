@@ -87,12 +87,25 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 
 #### Cadastro / Edição
 
-* Renomear os labels dos campos de formulário de acordo com as mesmas renomeações realizadas na tabela de listagem
-* Remover o campo de formulário **ID Original**
-* Remover o campo de formulário **Quantidade de cabos**
-* Remover o campo de formulário **Módulos**
-* Substituir os campos de texto **Cabo 1 - Código Erp** e **Cabo 2 - Código Erp** por campos `select` que listam os produtos **não obsoletos** do ERP que iniciam com o código `1020`
-  * Armazenar as informações de código ERP de acordo com o retorno do ERP
+* Substituir modal por nova página, em razão do aumento de informações associadas às estruturas
+  * Para cada estrutura, deverão ser criadas duas abas na página de adição/edição: **Configurações** e **Produtos**
+  * A estrutura da nova página está ilustrada na imagem abaixo, podendo ser alterada para melhoria da usabilidade e apresentação do conteúdo ao usuário:
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/de7a07a3-9d43-4817-a009-4b128528986a)
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/11eba02e-e2a5-47bd-b923-184d087275a1)
+    * Todos os campos de formulário relacionados a ambas as abas devem ser obrigatórios
+      * O sistema não deve permitir que uma estrutura seja salva sem ao menos um produto cadastrado
+      * O campo **Número mínimo de módulos por pedido** deve ser preenchido inicialmente com zero
+    * Os campos `select` dos cabos devem listar os produtos **não obsoletos** do ERP que iniciam com o código `1050`
+    * O campo `select` da aba de produtos deve listar os produtos **não obsoletos** do ERP que iniciam com o código `1020`
+    * O campo de fórmula da aba de produtos deve ser implementado de maneira similar ao campo de fórmula utilizado hoje para os acessórios
+      * Entretanto, variáveis e caracteres permitidos ainda serão definidos e, provavelmente, serão diferentes
+    * O label do campo de fórmula deve apresentar um ícone de informação que exibe um tooltip (ou estrutura similar) explicando ao usuário o formato aceito pelo campo
+      * Possivelmente, durante o desenvolvimento, essa abordagem pode ser substituída por outra forma de apresentação da informação, a depender do tamanho do texto necessário
+    * Alterações em ambas as abas somente serão salvas quando o usuário clicar em "Salvar"
+    * Deve ser exibida mensagem de confirmação ao usuário caso ele tente deixar a página, para evitar perda de informações
+      * Para diminuir a complexidade, essa mensagem pode ser exibida sempre, porém com texto genérico "..informações não salvas serão perdidas.."
+    * Precisamos deixar claro ao usuário que informações preenchidas na primeira linha da listagem de produtos não serão salvas a menos que ele clique no botão "+"
+    * Outros detalhes de implementação do formulário deverão ser discutidos durante o desenvolvimento
 * Para armazenamento das informações do formulário, criar a nova tabela `structures`
   * Essa tabela deve possuir as seguintes colunas:
     * `id`
@@ -100,21 +113,21 @@ Detalhamento das alterações necessárias para implantação da nova versão do
     * `type`: Define se a estrutura é do tipo solo ou telhado, deve aceitar somente os valores `ROOF` ou `GROUND`
     * `negative_cable_erp_code`
     * `positive_cable_erp_code`
+    * `min_module_qty`
     * `active`
     * `created_at`
     * `updated_at`
     * `deleted_at`
-  * Também será necessário criar a tabela `structures_branches` para associação entre estruturas e filiais 
+  * Também será necessário criar a tabela `structures_branches` para associação entre estruturas e filiais
+  * 🚩 Também será necessário criar a tabela `structure_products` para associação entre estruturas e filiais, contendo as colunas:
+    * `id`
+    * `structure_id`
+    * `erp_code`
+    * `qty_formula`
+    * `created_at`
+    * `updated_at`
+    * `deleted_at`
 * 🚩 Remover tabelas `roof_types`, `roof_types_branches`, `module_roof_types`
-* Substituir modal por nova página, em razão do aumento de informações associadas às estruturas
-  * Para cada estrutura, deverão ser criadas duas abas na página de adição/edição: **Configurações** e **Produtos**
-  * Todos os campos de formulário relacionados a ambas as abas devem ser obrigatórios
-    * O sistema não deve permitir que uma estrutura seja salva sem ao menos um produto cadastrado
-  * A estrutura da nova página está ilustrada na imagem abaixo, podendo ser alterada para melhoria da usabilidade e apresentação do conteúdo ao usuário:
-    ![image](https://github.com/nexenketly/task-docs/assets/109694742/dba9cd6d-381a-4601-95b4-082913e725e6)
-    ![image](https://github.com/nexenketly/task-docs/assets/109694742/11eba02e-e2a5-47bd-b923-184d087275a1)
-    * Detalhes de implementação do formulário deverão ser discutidos durante o desenvolvimento
-    * O campo `select` da aba de produtos deve listar os produtos **não obsoletos** do ERP que iniciam com o código `1050`
 
 #### Deleção
 
@@ -136,6 +149,7 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 
 * Tornar todos os campos do formulário obrigatórios
 * Corrigir associação de filiais que não está funcionando
+* 🚩 Renomear tabela `inverters_brands_branches`, que associa marcas e filiais, para `inverter_brands_branches`
 
 #### Deleção
 
@@ -187,6 +201,38 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 
 ## Módulo Portal
 
-### Informações iniciais
+Considerando as alterações no módulo gestão, serão necessárias alterações na construção do menu "Monte Seu Gerador" da Loja Online. Além disso, também serão necessárias alterações na forma de cálculo de um gerador considerando a nova maneira de cadastro das estruturas.
 
-### Detalhamento de estruturas
+### Monte Seu Gerador (MSG)
+
+#### Sem estrutura
+
+#### Estrutura em solo
+
+#### Estrutura em telhado
+
+### Cálculo de Estruturas
+
+Com a implementação da nova versão do menu MSG, sugere-se a remoção do menu "Editar estrutura de fixação", que existe hoje dentro da Loja Online e da edição de um orçamento, pelos seguintes motivos:
+
+* Essa opção existe hoje dentro do carrinho em razão da ausência da possibilidade de personalização da distribuição dos módulos nas configurações iniciais do MSG
+  * Com a nova versão do menu MSG, a personalização da distribuição dos módulos estará disponível, dispensando a existência de uma opção de configuração adicional
+    * Para recálculo do gerador, será necessário apenas que o usuário retorne ao passo inicial
+  * Para melhoria da experiência do usuário, as parametrizações inseridas serão salvas no Armazenamento Local (lado cliente), persistindo mesmo em caso de atualização da página
+    * As parametrizações armazenadas serão removidas somente quando o carrinho for transformado em um orçamento ou pedido
+    * As parametrizações armazenadas serão atualizadas sempre que o usuário alterar algum dos parâmetros do menu MSG
+* Quanto a opção que existe hoje dentro da edição de um orçamento, é possível argumentar que:
+  * Para recálculo somente dos produtos que compõe a estrutura a serem adicionados ao pedido, é preciso saber:
+    * Qual é o inversor selecionado (para inclusão dos cabos, por exemplo)
+    * Qual é o módulo e qual é a potência (para cálculo da quantidade de módulos permitida)
+  * Isso gera alguns problemas:
+    * Essas informações não são armazenadas hoje e, mesmo que fossem, poderiam estar desatualizadas em relação à configuração atual do pedido, que pode ser alterado manualmente
+      * Além disso, também poderiam gerar inconsistências, como apresentar um módulo que não está mais ativo, apresentar uma combinação de módulo e estrutura que não é mais permitida, entre outros
+    * Caso seja realizada tentativa de obtenção dessas informações a partir dos itens do pedido, podem ser encontradas inconsistências, como a existência de dois ou mais tipos de módulos ou inversores (novamente a partir de alteração manual)
+    * Caso solicitemos a inclusão dessas informações novamente pelo usuário, visando substituição completa dos itens do pedido (para evitar inconsistências), caracterizamos a mesma estrutura do menu MSG
+      * Nesse caso, o usuário teria a possibilidade de gerar um novo orçamento para o cliente, através do menu MSG da loja online
+      * Entretanto, caso seja realmente necessária a permanência do cálculo, essa seria a opção mais indicada, adicionando um novo passo na edição do orçamento, de maneira a incluir a mesma estrutura utilizada no novo menu MSG
+        * Nesse cenário, a parametrização não seria salva em Armazenamento Local, devido as especificidades da tela e do menu de edição do orçamento
+        * Além disso, alterações somente seriam salvas após o usuário clicar no botão "Salvar"
+        * Por fim, todas as edições manuais seriam perdidas (como já ocorre hoje)
+
