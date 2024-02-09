@@ -69,22 +69,23 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 
 * Remover coluna **ID**
 * Renomear coluna **Nome** para **Descrição**
-* Renomear coluna **Cabo 1** para **Cód. ERP Cabo Negativo**
-* Renomear coluna **Cabo 2** para **Cód. ERP Cabo Positivo**
+* Renomear coluna **Ativo** para **Ativa**
+* Remover coluna **Cód. ERP Cabo Negativo**
+* Remover coluna **Cód. ERP Cabo Positivo**
 * Remover coluna **Qtd. Cabos**
 * Remover coluna **Módulos**
+* Adicionar coluna **Tipo**
 
 #### Cadastro / Edição
 
 * Substituir modal por nova página, em razão do aumento de informações associadas às estruturas
   * Para cada estrutura, deverão ser criadas duas abas na página de adição/edição: **Configurações** e **Produtos**
   * A estrutura da nova página está ilustrada na imagem abaixo, podendo ser alterada para melhoria da usabilidade e apresentação do conteúdo ao usuário:
-    ![image](https://github.com/nexenketly/task-docs/assets/109694742/de7a07a3-9d43-4817-a009-4b128528986a)
+    ![image](https://github.com/nexenketly/task-docs/assets/109694742/6b7c3bcb-7bdc-4d4a-a20c-86582a6e2c6d)
     ![image](https://github.com/nexenketly/task-docs/assets/109694742/11eba02e-e2a5-47bd-b923-184d087275a1)
     * Todos os campos de formulário relacionados a ambas as abas devem ser obrigatórios
       * O sistema não deve permitir que uma estrutura seja salva sem ao menos um produto cadastrado
       * O campo **Número mínimo de módulos por pedido** deve ser preenchido inicialmente com zero
-    * Os campos `select` dos cabos devem listar os produtos **não obsoletos** do ERP que iniciam com o código `1050`
     * O campo `select` da aba de produtos deve listar os produtos **não obsoletos** do ERP que iniciam com o código `1020`
     * O campo de fórmula da aba de produtos deve ser implementado de maneira similar ao campo de fórmula utilizado hoje para os acessórios
       * Entretanto, variáveis e caracteres permitidos ainda serão definidos e, provavelmente, serão diferentes
@@ -100,8 +101,6 @@ Detalhamento das alterações necessárias para implantação da nova versão do
     * `id`
     * `description`
     * `type`: Define se a estrutura é do tipo solo ou telhado, deve aceitar somente os valores `ROOF` ou `GROUND`
-    * `negative_cable_erp_code`
-    * `positive_cable_erp_code`
     * `min_module_qty`
     * `active`
     * `created_at`
@@ -169,8 +168,23 @@ Detalhamento das alterações necessárias para implantação da nova versão do
 * Substituir o campo de texto **Código ERP conector** por um campo `select` que lista os produtos **não obsoletos** do ERP que iniciam com o código `1030`
   * Armazenar a informação de código ERP de acordo com o retorno do ERP
 * Remover o campo de formulário **Código Stick Wi-Fi (Não obrigatório)**
-* Criar o campo **Qtd Cabo/Conector** para inclusão da quantidade de cabo exigida para cada conector
-  * Adicionar a coluna `connector_cable_quantity` à tabela `inverters`
+  * Esse campo passará a ser um acessório
+* Criar campos para inclusão dos códigos e da quantidade de cabo exigida para cada conector em todos os tipos de estrutura:
+  * **Cabo Positivo (padrão)**, **Cabo Negativo (padrão)** e **Qtd Cabo (padrão)** - _SEM ESTRUTURA_
+  * **Cabo Positivo (telhado)**, **Cabo Negativo (telhado)** e **Qtd Cabo (telhado)**
+  * **Cabo Positivo (solo)**, **Cabo Negativo (solo)** e **Qtd Cabo (solo)**
+  * Os campos `select` dos cabos devem listar os produtos **não obsoletos** do ERP que iniciam com o código `1050`
+  * Criar a tabela `inverter_cables` para armazenamento dessas informações com as seguintes colunas:
+    * `id`
+    * `inverter_id`
+    * `structure_type`: Deve ser armazenado pelo sistema de acordo com o campo preenchido, sendo
+      * **padrão** = `NULL`
+      * **telhado** = `ROOF`
+      * **solo** = `GROUND`
+    * `positive_erp_code`
+    * `negative_erp_code`
+    * `quantity`
+    * `updated_at`
 * 🚩 Renomear colunas da tabela `inverters`:
   * `inverter_erp_code` ➡️ `erp_code`
   * `inverter_name` ➡️ `description`
@@ -227,7 +241,18 @@ O comportamento de cada opção será detalhado nas seções abaixo.
 
 #### Sem estrutura
 
+Quando o usuário selecionar a opção "Sem estrutura", será exibida uma mensagem informando a ausência de estruturas de fixação no gerador montado:
+
+![image](https://github.com/nexenketly/task-docs/assets/109694742/dc16b745-e922-41a2-8137-849c816de230)
+
 ##### Lógica do cálculo
+
+Para cálculo do gerador para esta opção, deve ser realizada a seguinte lógica:
+
+* Determinar a potência real do gerador:
+  ```math
+  potencia\_do\_gerador = \left \lceil \frac{potencia\_informada}{potencia\_do\_modulo} \right \rceil * potencia\_do\_modulo
+  ```
 
 #### Estrutura em solo
 
@@ -263,7 +288,6 @@ Com a implementação da nova versão do menu MSG, sugere-se a remoção do menu
         * Por fim, todas as edições manuais seriam perdidas (como já ocorre hoje)
        
 ## Recomendações Gerais
-
 
 * Utilizar [React Hook Form](https://react-hook-form.com/) para construção dos formulários
 * Utilizar [`useMutation`](https://tanstack.com/query/latest/docs/framework/react/reference/useMutation) para envio dos dados ao backend
