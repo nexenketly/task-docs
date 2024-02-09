@@ -247,12 +247,53 @@ Quando o usuário selecionar a opção "Sem estrutura", será exibida uma mensag
 
 ##### Lógica do cálculo
 
-Para cálculo do gerador para esta opção, deve ser realizada a seguinte lógica:
+Para cálculo dos produtos do gerador para esta opção, deve ser realizada a seguinte lógica:
 
-* Determinar a potência real do gerador:
+1. Determinar a potência real do gerador:
   ```math
   potencia\_do\_gerador = \left \lceil \frac{potencia\_informada}{potencia\_do\_modulo} \right \rceil * potencia\_do\_modulo
   ```
+  * A potência do módulo está armazenada na tabela `modules` e deve ser encontrada com base no módulo selecionado pelo usuário
+2. Determinar a quantidade de módulos:
+  ```math
+  quantidade\_de\_modulos = \frac{potencia\_do\_gerador}{potencia\_do\_modulo}
+  ```
+3. Determinar a quantidade de inversores:
+  ```math
+  overload\_maximo = 1.35
+  ```
+  ```math
+  quantidade\_minima\_de\_inversores = \left \lfloor \frac{potencia\_do\_gerador}{potencia\_do\_inversor} \right \rfloor
+  ```
+  ```math
+  potencia\_calculada = potencia\_do\_inversor * quantidade\_minima\_de\_inversores
+  ```
+  ```math
+  quantidade\_de\_inversores = \left\{\begin{matrix}
+  quantidade\_minima\_de\_inversores, & \frac{potencia\_do\_gerador}{potencia\_calculada} \leq overload\_maximo \\
+  quantidade\_minima\_de\_inversores + 1, & \mbox{caso contr\'{a}rio}
+  \end{matrix}\right.
+  ```
+  * A potência do inversor está armazenada na tabela `inverters` e deve ser encontrada com base no inversor selecionado pelo usuário
+4. Determinar a quantidade de conectores:
+  ```math
+  quantidade\_de\_conectores = quantidade\_de\_inversores * quantidade\_de\_conectores\_do\_inversor
+  ```
+  * A quantidade de conectores do inversor está armazenada na tabela `inverters` e deve ser encontrada com base no inversor selecionado pelo usuário
+5. Determinar a quantidade de cabo:
+  ```math
+  quantidade\_de\_cabo = quantidade\_de\_conectores * quantidade\_de\_cabo\_do\_inversor
+  ```
+  * A quantidade de cabo do inversor estará armazenada na tabela `inverter_cables` e deve ser encontrada com base no inversor selecionado pelo usuário e na opção de estrutura
+6. Adicionar à estrutura que será retornada os seguintes produtos:
+
+| Produto | Quantidade |
+|---------|------------|
+| Módulo selecionado pelo integrador | _quantidade_de_modulos_ |
+| Inversor selecionado pelo integrador | _quantidade_de_inversores_ |
+| Conector associado ao inversor selecionado pelo integrador | _quantidade_de_conectores_ |
+| Cabo positivo associado ao inversor selecionado pelo integrador (tabela `inverter_cables`) | _quantidade_de_cabo_ |
+| Cabo negativo associado ao inversor selecionado pelo integrador (tabela `inverter_cables`) | _quantidade_de_cabo_ |
 
 #### Estrutura em solo
 
