@@ -285,7 +285,7 @@ Para cálculo dos produtos do gerador para esta opção, deve ser realizada a se
   quantidade\_de\_cabo = quantidade\_de\_conectores * quantidade\_de\_cabo\_do\_inversor
   ```
   * A quantidade de cabo do inversor estará armazenada na tabela `inverter_cables` e deve ser encontrada com base no inversor selecionado pelo usuário e na opção de estrutura
-6. Adicionar à estrutura que será retornada os seguintes produtos:
+6. Adicionar a uma estrutura de armazenamento os seguintes produtos:
 
 | Produto | Quantidade |
 |---------|------------|
@@ -294,6 +294,16 @@ Para cálculo dos produtos do gerador para esta opção, deve ser realizada a se
 | Conector associado ao inversor selecionado pelo integrador | _quantidade_de_conectores_ |
 | Cabo positivo associado ao inversor selecionado pelo integrador (tabela `inverter_cables`) | _quantidade_de_cabo_ |
 | Cabo negativo associado ao inversor selecionado pelo integrador (tabela `inverter_cables`) | _quantidade_de_cabo_ |
+
+7. Determinar os acessórios do gerador e sua quantidade, de acordo com a tabela `accessories`
+   * Os produtos acessórios e sua quantidade devem ser determinados de acordo com a lógica já utilizada hoje
+8. Adicionar produtos acessórios à estrutura de armazenamento
+9. Juntar possíveis produtos duplicados, somando sua quantidade
+10. Buscar pelos códigos dos produtos no ERP para validação e cálculo da disponibilidade
+    * Caso algum item não seja retornado, um erro deve ser exibido ao usuário, da mesma forma que já ocorre hoje
+11. Excluir o carrinho ativo do usuário/integrador e criar um novo carrinho
+12. Adicionar ao carrinho, na tabela `invoice_items`, os produtos da estrutura de armazenamento, determinando sua disponibilidade
+    * O detalhamento dos dados a serem inseridos será determinado durante o desenvolvimento, após análise do código 
 
 #### Estrutura em solo
 
