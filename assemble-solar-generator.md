@@ -313,9 +313,9 @@ Quando o usuário selecionar a opção "Estrutura em solo", será exibida uma me
 ![image](https://github.com/nexenketly/task-docs/assets/109694742/c717fd14-ae24-43a9-a3af-526184ba75f4)
 _(Em construção)_
 
-Além da mensagem, será exibido um menu de seleção que lista as estruturas cadastradas no módulo gestão, cujo tipo é `GROUND`, permitindo ao usuário selecionar para qual tipo de estrutura em solo, dentre as padronizações existentes, ele deseja cálcular o seu gerador.
+Além da mensagem, será exibido um menu de seleção que lista as estruturas cadastradas no módulo gestão, cujo tipo é `GROUND`, permitindo ao usuário selecionar para qual tipo de estrutura em solo, dentre as padronizações existentes, ele deseja calcular o seu gerador.
 
-Durante a inclusão dos parâmetros, o sistema deve cálcular também no front a quantidade de módulos, de acordo com o passo 2 da lógica apresentada acima, e validar se essa quantidade é igual ou superior ao mínimo de módulos exigido por pedido, que estará armazenado dentro da tabela `structures` na coluna `min_module_qty`. Caso essa quantidade seja inferior, deverá ser apresentada uma mensagem ao usuário informando:
+Durante a inclusão dos parâmetros, o sistema deve calcular também no front a quantidade de módulos, de acordo com o passo 2 da lógica apresentada acima, e validar se essa quantidade é igual ou superior ao mínimo de módulos exigido por pedido, que estará armazenado, para a estrutura em solo selecionada, dentro da tabela `structures` na coluna `min_module_qty`. Caso essa quantidade seja inferior, deverá ser apresentada uma mensagem ao usuário informando:
 
 > A quantidade de módulos do gerador é inferior ao mínimo exigido para a estrutura selecionada. A quantidade mínima é de XX módulos e com a potência informada serão inclusos apenas XX módulos. Para prosseguir com a montagem do kit, você precisa informar uma potência mínima de XX kW.
 
@@ -333,7 +333,41 @@ Para cálculo dos produtos do gerador para esta opção, devem ser seguidos os m
 
 #### Estrutura em telhado
 
+Quando o usuário selecionar a opção "Estrutura em telhado", será exibida uma mensagem informando sobre a possibilidade do dimensionamento personalizado dos módulos no gerador montado:
+
+![image](https://github.com/nexenketly/task-docs/assets/109694742/5001c3cb-9efc-423a-8dda-8a2d92f06ff4)
+_(Em construção)_
+
+Além da mensagem, será exibido um menu de seleção que lista as estruturas cadastradas no módulo gestão, cujo tipo é `ROOF`, permitindo ao usuário selecionar para qual tipo de estrutura em telhado ele deseja calcular o seu gerador.
+
+Existirá um botão para adição de mais telhados e o usuário poderá adicionar quantos telhados quiser. Para cada telhado adicionado, será exibido tampo um campo para inclusão do número de linhas de módulos a serem instaladas naquele telhado. A partir do preenchimento do campo que informa o número de linhas, serão exibidos campos para inclusão da quantidade de módulos em cada linha, conforme ilustrado abaixo:
+
+![image](https://github.com/nexenketly/task-docs/assets/109694742/91fff7b0-8889-405a-bc19-fcf40027c5df)
+_(Em construção)_
+
+Além dos campos para inclusão da quantidade de módulos em cada linha, também serão exibidos:
+
+* Uma ilustração básica da disposição dos módulos no telhado, de acordo com os parâmetros informados
+* Um botão para remoção do telhado incluso
+
+> Todos os campos de formulário deverão estar preenchidos para que seja possível buscar e calcular o gerador.
+
+A soma de todas as quantidades de módulo informadas deverá ser obrigatóriamente igual à quantidade de módulos que é dada de acordo com o passo 2 da lógica apresentada para a opção "Sem estrutura". Caso seja inferior ou superior, será exibida uma mensagem para o usuário solicitando o ajuste da potência. Essa mensagem e o seu posicionamento ainda serão definidos durante o desenvolvimento.
+
+Da mesma forma que acontece para a estrutura em solo, durante a inclusão dos parâmetros, o sistema deve calcular também no front a quantidade de módulos e validar se essa quantidade é igual ou superior ao mínimo de módulos exigido por pedido, que estará armazenado, para o telhado selecionado, dentro da tabela `structures` na coluna `min_module_qty`. Caso essa quantidade seja inferior, deverá ser apresentada uma mensagem ao usuário informando:
+
+> A quantidade de módulos do gerador é inferior ao mínimo exigido para a estrutura selecionada. A quantidade mínima é de XX módulos e com a potência informada serão inclusos apenas XX módulos. Para prosseguir com a montagem do kit, você precisa informar uma potência mínima de XX kW.
+
 ##### Lógica do cálculo
+
+Para cálculo dos produtos do gerador para esta opção, devem ser seguidos os mesmos doze passos utilizados na opção "Sem estrutura", adicionando um passo extra entre os passos 6 e 7:
+
+* **Passo Extra:** Determinar os produtos das estruturas de fixação e sua quantidade para o gerador, de acordo com a tabela `structures`
+   * Como as estruturas em telhado permitem personalização, deverá ser realizada para cada telhado e cada linha do telhado a seguinte lógica:
+     * Incluir na variável de armazenamento todos os produtos da tabela 🚩 `structure_products`, associados ao telhado em questão
+       * Sua quantidade deve ser calculada com base na fórmula cadastrada pelo usuário, que se dará em razão do número de módulos na linha em questão
+         * A interpretação e aplicação da fórmula para obtenção da quantidade deve se dar de maneira similar à lógica utilizada para os acessórios
+           * Possíveis melhorias identificadas durante o desenvolvimento deverão ser propagadas para ambas as lógicas (ex.: conseguimos não utilizar `eval`?)
 
 ### Cálculo de Estruturas
 
