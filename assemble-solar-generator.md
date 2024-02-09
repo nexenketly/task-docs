@@ -244,6 +244,7 @@ O comportamento de cada opção será detalhado nas seções abaixo.
 Quando o usuário selecionar a opção "Sem estrutura", será exibida uma mensagem informando a ausência de estruturas de fixação no gerador montado:
 
 ![image](https://github.com/nexenketly/task-docs/assets/109694742/dc16b745-e922-41a2-8137-849c816de230)
+_(Em construção)_
 
 ##### Lógica do cálculo
 
@@ -285,7 +286,7 @@ Para cálculo dos produtos do gerador para esta opção, deve ser realizada a se
   quantidade\_de\_cabo = quantidade\_de\_conectores * quantidade\_de\_cabo\_do\_inversor
   ```
   * A quantidade de cabo do inversor estará armazenada na tabela `inverter_cables` e deve ser encontrada com base no inversor selecionado pelo usuário e na opção de estrutura
-6. Adicionar a uma estrutura de armazenamento os seguintes produtos:
+6. Adicionar a uma váriavel de armazenamento os seguintes produtos:
 
 | Produto | Quantidade |
 |---------|------------|
@@ -297,17 +298,38 @@ Para cálculo dos produtos do gerador para esta opção, deve ser realizada a se
 
 7. Determinar os acessórios do gerador e sua quantidade, de acordo com a tabela `accessories`
    * Os produtos acessórios e sua quantidade devem ser determinados de acordo com a lógica já utilizada hoje
-8. Adicionar produtos acessórios à estrutura de armazenamento
-9. Juntar possíveis produtos duplicados, somando sua quantidade
+8. Adicionar produtos acessórios à váriavel de armazenamento
+9. A partir da variável de armazenamento, juntar possíveis produtos duplicados, somando sua quantidade
 10. Buscar pelos códigos dos produtos no ERP para validação e cálculo da disponibilidade
     * Caso algum item não seja retornado, um erro deve ser exibido ao usuário, da mesma forma que já ocorre hoje
 11. Excluir o carrinho ativo do usuário/integrador e criar um novo carrinho
-12. Adicionar ao carrinho, na tabela `invoice_items`, os produtos da estrutura de armazenamento, determinando sua disponibilidade
+12. Adicionar ao carrinho, na tabela `invoice_items`, todos os produtos da variável de armazenamento, determinando sua disponibilidade
     * O detalhamento dos dados a serem inseridos será determinado durante o desenvolvimento, após análise do código 
 
 #### Estrutura em solo
 
+Quando o usuário selecionar a opção "Estrutura em solo", será exibida uma mensagem informando a impossibilidade do dimensionamento personalizado dos módulos no gerador montado:
+
+![image](https://github.com/nexenketly/task-docs/assets/109694742/c717fd14-ae24-43a9-a3af-526184ba75f4)
+_(Em construção)_
+
+Além da mensagem, será exibido um menu de seleção que lista as estruturas cadastradas no módulo gestão, cujo tipo é `GROUND`, permitindo ao usuário selecionar para qual tipo de estrutura em solo, dentre as padronizações existentes, ele deseja cálcular o seu gerador.
+
+Durante a inclusão dos parâmetros, o sistema deve cálcular também no front a quantidade de módulos, de acordo com o passo 2 da lógica apresentada acima, e validar se essa quantidade é igual ou superior ao mínimo de módulos exigido por pedido, que estará armazenado dentro da tabela `structures` na coluna `min_module_qty`. Caso essa quantidade seja inferior, deverá ser apresentada uma mensagem ao usuário informando:
+
+> A quantidade de módulos do gerador é inferior ao mínimo exigido para a estrutura selecionada. A quantidade mínima é de XX módulos e com a potência informada serão inclusos apenas XX módulos. Para prosseguir com a montagem do kit, você precisa informar uma potência mínima de XX kW.
+
+O posicionamento dessa mensagem será definido durante o desenvolvimento.
+
 ##### Lógica do cálculo
+
+Para cálculo dos produtos do gerador para esta opção, devem ser seguidos os mesmos doze passos utilizados na opção "Sem estrutura", adicionando um passo extra entre os passos 6 e 7:
+
+* **Passo Extra:** Determinar os produtos da estrutura e sua quantidade para o gerador, de acordo com a tabela `structures`
+   * Como as estruturas em solo não permitem personalização, a fórmula para cálculo das quantidades estará ajustada para se dar em relação ao total de módulos
+   * Assim, todos os produtos da tabela 🚩 `structure_products`, associados à estrutura em solo selecionada pelo usuário, deverão ser inclusos na variável de armazenamento, e sua quantidade deve ser calculada com base na fórmula cadastrada pelo usuário
+     * A interpretação e aplicação da fórmula para obtenção da quantidade deve se dar de maneira similar à lógica utilizada para os acessórios
+       * Possíveis melhorias identificadas durante o desenvolvimento deverão ser propagadas para ambas as lógicas (ex.: conseguimos não utilizar `eval`?)
 
 #### Estrutura em telhado
 
